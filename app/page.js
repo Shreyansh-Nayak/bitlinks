@@ -17,11 +17,12 @@ export default function Home() {
 
         <div className="flex flex-col justify-center items-center gap-4">
           <p className={`text-2xl font-bold ${poppins.classname}`}>
-            Welcome to Bitlinks, the world's best URL shortener!
+             Welcome to Bitlinks, the world&apos;s best URL shortener!
           </p>
 
           <p>
-            Get started by navigating to the "Shorten" page to create your first short link!
+            Get started by navigating to the &quot;Shorten&quot; page to create
+            your first short link!
           </p>
 
           <div className='flex gap-3 justify-start'>
