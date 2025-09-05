@@ -1,27 +1,17 @@
-import { MongoClient } from "mongodb";
-
-let client;
-let clientPromise;
-
-// Reuse MongoDB connection across hot reloads in dev
-if (!global._mongoClientPromise) {
-  client = new MongoClient(process.env.MONGODB_URI);
-  global._mongoClientPromise = client.connect();
-}
-clientPromise = global._mongoClientPromise;
+import clientPromise from "@/lib/mongodb";
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
     const { url, shorturl } = await req.json();
 
     if (!url || !shorturl) {
-      return Response.json(
+      return NextResponse.json(
         { success: false, message: "URL and Short URL are required" },
         { status: 400 }
       );
     }
 
-    // Connect to DB
     const client = await clientPromise;
     const db = client.db("urlshortener");
     const collection = db.collection("urls");
@@ -29,7 +19,7 @@ export async function POST(req) {
     // Check if shorturl already exists
     const existing = await collection.findOne({ shorturl });
     if (existing) {
-      return Response.json(
+      return NextResponse.json(
         { success: false, message: "Short URL already taken" },
         { status: 409 }
       );
@@ -42,15 +32,15 @@ export async function POST(req) {
       createdAt: new Date(),
     });
 
-    return Response.json({
+    return NextResponse.json({
       success: true,
       message: "URL saved successfully!",
       id: result.insertedId,
     });
   } catch (error) {
     console.error("API Error:", error);
-    return Response.json(
-      { success: false, message: "Server error" },
+    return NextResponse.json(
+      { success: false, message: error.message || "Server error" },
       { status: 500 }
     );
   }
